@@ -15,7 +15,7 @@ The project includes:
 
 To set up your project environment, create and activate a **virtual environment**:
 
-#### On Linux/macOS:
+### On Linux/macOS:
 
 ```bash
 python3 -m venv venv
@@ -23,7 +23,7 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 
-##### Training the Models:
+#### Training the Models:
 1. Security Classification Model
 To train the security classification model:
 cd models/securityclassification_final
