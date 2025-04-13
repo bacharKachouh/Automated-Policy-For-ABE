@@ -1,0 +1,23 @@
+<Data>
+<DataType>Medical Records</DataType>
+<Purpose>Treatment Monitoring</Purpose>
+<Department>Cardiology</Department>
+<Emergency>No</Emergency>
+<PatientID>PT22222</PatientID>
+<PatientGID>GID33333</PatientGID>
+<Content>
+<PatientName>Linda Martinez</PatientName>
+<DOB>1982-03-18</DOB>
+<Gender>Female</Gender>
+<Diagnosis>Congestive Heart Failure</Diagnosis>
+<TreatmentPlan>Daily beta-blockers, sodium-restricted diet, bi-weekly checkups</TreatmentPlan>
+<Medication>Metoprolol 50mg once daily</Medication>
+<BloodPressure>120/80</BloodPressure>
+<HeartRate>72 bpm</HeartRate>
+<Allergies>Penicillin</Allergies>
+<EjectionFraction>35%</EjectionFraction>
+<RecentSymptoms>Shortness of breath, fatigue, occasional chest discomfort</RecentSymptoms>
+<Notes>Patient education on fluid intake and dietary restrictions provided. Patient was advised to monitor daily weight and report any increase above 2kg over 3 days.</Notes>
+<Doctor>Dr. Ray Williams</Doctor>
+</Content>
+</Data>

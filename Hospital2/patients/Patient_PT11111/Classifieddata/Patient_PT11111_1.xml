@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Data>
+<SecurityLabel>Confidential</SecurityLabel><DataType>Lab Results</DataType>
+<Purpose>Pre-Surgical Clearance</Purpose>
+<Department>Laboratory</Department>
+<Emergency>No</Emergency>
+<PatientID>PT11111</PatientID>
+<PatientGID>GID22222</PatientGID>
+<Content>
+<PatientName>John Carter</PatientName>
+<DOB>1965-07-12</DOB>
+<Gender>Male</Gender>
+<TestName>Basic Metabolic Panel</TestName>
+<TestDate>2025-01-10</TestDate>
+<Glucose>95 mg/dL</Glucose>
+<Calcium>9.0 mg/dL</Calcium>
+<Sodium>140 mEq/L</Sodium>
+<Potassium>4.3 mEq/L</Potassium>
+<Chloride>102 mEq/L</Chloride>
+<Bicarbonate>24 mEq/L</Bicarbonate>
+<BUN>14 mg/dL</BUN>
+<Creatinine>1.0 mg/dL</Creatinine>
+<TestResults>All results are within normal limits.</TestResults>
+<Comments>The patient shows stable metabolic function and is cleared for surgery. Continued monitoring post-operation is recommended due to age-related risk factors.</Comments>
+<Doctor>Dr. Susan Blake</Doctor>
+</Content>
+</Data>

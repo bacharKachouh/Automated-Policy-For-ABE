@@ -1,0 +1,8 @@
+
+Data Type: Medical Records  
+Sensitivity: Highly Confidential  
+Department: Neurology  
+Purpose: Diagnosis  
+Emergency: No  
+### Access Policy:
+    

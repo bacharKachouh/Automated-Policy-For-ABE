@@ -1,0 +1,8 @@
+
+Data Type: Lab Results  
+Sensitivity: Highly Confidential  
+Department: Laboratory  
+Purpose: Pre-Surgical Clearance  
+Emergency: No  
+### Access Policy:
+    

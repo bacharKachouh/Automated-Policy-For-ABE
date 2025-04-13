@@ -1,0 +1,8 @@
+
+Data Type: Medical Records  
+Sensitivity: Highly Confidential  
+Department: Oncology  
+Purpose: Treatment Planning  
+Emergency: No  
+### Access Policy:
+    

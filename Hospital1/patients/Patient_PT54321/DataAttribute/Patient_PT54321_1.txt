@@ -1,0 +1,8 @@
+
+Data Type: Lab Results  
+Sensitivity: Confidential  
+Department: Laboratory  
+Purpose: Routine Checkup  
+Emergency: No  
+### Access Policy:
+    

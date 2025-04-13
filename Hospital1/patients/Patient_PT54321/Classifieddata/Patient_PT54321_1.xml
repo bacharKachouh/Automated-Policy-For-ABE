@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Data>
+    <SecurityLabel>Confidential</SecurityLabel><DataType>Lab Results</DataType>
+    <Purpose>Routine Checkup</Purpose>
+    <Department>Laboratory</Department>
+    <Emergency>No</Emergency>
+    <PatientID>PT54321</PatientID>
+    <PatientGID>GID98765</PatientGID>
+    <Content>
+        <PatientName>Sarah Williams</PatientName>
+        <DOB>1990-08-10</DOB>
+        <Gender>Female</Gender>
+        <TestName>Complete Blood Count (CBC)</TestName>
+        <TestDate>2024-11-15</TestDate>
+        <WBC>5.2 x10^3/µL</WBC>
+        <RBC>4.6 x10^6/µL</RBC>
+        <Hemoglobin>13.2 g/dL</Hemoglobin>
+        <Hematocrit>39.5%</Hematocrit>
+        <PlateletCount>250 x10^3/µL</PlateletCount>
+        <TestResults>Normal</TestResults>
+        <Comments>Long-term study of the effects of vaping on lung function in adolescents.</Comments>
+    </Content>
+</Data>

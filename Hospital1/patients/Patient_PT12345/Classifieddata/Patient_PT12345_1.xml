@@ -1,0 +1,23 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Data>
+    <SecurityLabel>Confidential</SecurityLabel><DataType>Medical Records</DataType>
+    <Purpose>Diagnosis</Purpose>
+    <Department>Neurology</Department>
+    <Emergency>No</Emergency>
+    <PatientID>PT12345</PatientID>
+    <PatientGID>GID67890</PatientGID>
+    <Content>
+        <PatientName>Michael Thompson</PatientName>
+        <DOB>1975-04-22</DOB>
+        <Gender>Male</Gender>
+        <Diagnosis>Multiple Sclerosis</Diagnosis>
+        <Symptoms>Fatigue, numbness, blurred vision</Symptoms>
+        <TreatmentPlan>Interferon therapy, physical therapy, stress management</TreatmentPlan>
+        <Medication>Interferon beta-1a</Medication>
+        <Allergies>None</Allergies>
+        <PreviousConditions>Hypertension, Asthma</PreviousConditions>
+        <FamilyHistory>Father had stroke, mother with diabetes</FamilyHistory>
+        <BloodPressure>130/85</BloodPressure>
+        <HeartRate>76 bpm</HeartRate>
+    </Content>
+</Data>

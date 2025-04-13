@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<Data>
+    <SecurityLabel>Highly Confidential</SecurityLabel><DataType>Medical Records</DataType>
+    <Purpose>Treatment Planning</Purpose>
+    <Department>Oncology</Department>
+    <Emergency>No</Emergency>
+    <PatientID>PT98765</PatientID>
+    <PatientGID>GID65432</PatientGID>
+    <Content>
+        <PatientName>Emily Johnson</PatientName>
+        <DOB>1978-04-22</DOB>
+        <Gender>Female</Gender>
+        <Diagnosis>Stage 2 Breast Cancer</Diagnosis>
+        <TreatmentPlan>Adjuvant Chemotherapy</TreatmentPlan>
+        <GeneticTesting>BRCA1 Mutation Detected</GeneticTesting>
+        <FamilyHistory>Mother: Breast Cancer (Deceased)</FamilyHistory>
+        <TestDate>2024-10-05</TestDate>
+        <TreatmentStartDate>2024-10-20</TreatmentStartDate>
+        <TreatmentNotes>
+            The patient is advised to start a 6-cycle chemotherapy plan with close monitoring for side effects. 
+            Genetic counseling recommended for family members.
+        </TreatmentNotes>
+    </Content>
+</Data>

@@ -1,0 +1,2 @@
+
+     Access Details:  This data can be accessed by users having roles: (Nurse or Researcher) and belonging to the Neurological department with clearance level 1.

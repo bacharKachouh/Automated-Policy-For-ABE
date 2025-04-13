@@ -1,0 +1,2 @@
+
+     Access Details:  This data can be accessed by users having roles: (Researcher or Doctor) and belonging to the Cardiothoracic Oncology department with clearance level 2.

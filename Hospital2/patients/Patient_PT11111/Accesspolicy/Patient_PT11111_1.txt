@@ -1,0 +1,2 @@
+
+     Access Details:  This data can be accessed by users having roles: (Doctor or Researcher) and belonging to the Lab.

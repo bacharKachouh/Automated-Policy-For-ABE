@@ -1,0 +1,8 @@
+
+Data Type: Medical Records  
+Sensitivity: Highly Confidential  
+Department: Cardiology  
+Purpose: Treatment Monitoring  
+Emergency: No  
+### Access Policy:
+    
