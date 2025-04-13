@@ -19,40 +19,29 @@ The project includes:
 To set up your project environment, create and activate a **virtual environment**:
 
 ### On Linux/macOS:
-
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-On Windows:
-bash
-Copy
-Edit
-python -m venv venv
-venv\Scripts\activate
+```
+
 Once activated, install the required dependencies:
-
-bash
-Copy
-Edit
-pip install -r requirements.txt
-Training the Models
-1. Security Classification Model
+```bash
+pip install -r requirements2.txt
+```
+#### Training the Models
+1. **Security Classification Model**
 To train the security classification model:
-
-bash
-Copy
-Edit
+```bash
 cd models/securityclassification_final
 python training.py
-2. Policy Extraction Model
+```
+2. **Policy Extraction Model**
 To train the policy extraction model:
-
-bash
-Copy
-Edit
+```bash
 cd models/Policy_extraction
 python trainingf.py
-Running the Demo
+```
+##### Running the Demo
 The demo script allows you to choose a hospital, input a client ID, and the system will run the following:
 
 Classify the data based on sensitivity.
@@ -64,11 +53,9 @@ Encrypt the data using the generated policy.
 Decrypt the data based on the client's attributes.
 
 To run the demo:
-
-bash
-Copy
-Edit
+```bash
 python demo.py
+```
 You will be prompted to:
 
 Select a hospital (e.g., Hospital1 or Hospital2).
@@ -85,6 +72,3 @@ For testing, you can try using a file like Patient_PT22222_1.xml or any other va
 Contact
 Developed by Bachar KACHOUH. For inquiries or collaborations, reach out at bachar.kachouh@hotmail.com.
 
-yaml
-Copy
-Edit
