@@ -23,7 +23,7 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 
-Training the Models
+##### Training the Models:
 1. Security Classification Model
 To train the security classification model:
 cd models/securityclassification_final
