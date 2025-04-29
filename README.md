@@ -32,7 +32,7 @@ source venv/bin/activate
 
 Once activated, install the required dependencies:
 ```bash
-pip install -r requirements2.txt
+pip install -r requirements.txt
 ```
 #### Training the Models
 1. **Security Classification Model**
