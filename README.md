@@ -19,6 +19,12 @@ The project includes:
 - You must run the entire project inside a **virtual environment** (`venv`) to avoid package conflicts.
 - The project uses **Charm-Crypto 0.5**, which is only compatible with Python 3.7.
 - Other dependencies are listed in `requirements.txt`.
+## Hardware Requirements
+
+- A machine with sufficient computational resources is required for training:
+  - **RAM**: 16 GB or more  
+  - **CPU**: Minimum 4 cores (8 cores recommended for faster processing)  
+  - **GPU**: A dedicated GPU is required for efficient training of both models 
 
 ## Setup and Installation
 
