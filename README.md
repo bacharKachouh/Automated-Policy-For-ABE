@@ -14,13 +14,19 @@ The project includes:
 2. **Policy Extraction Model** (`Policy_extraction`): Generates access control policies based on clinical data and extracted features.
 3. **Demo Script**: Allows users to choose a hospital, enter a client ID, and runs the entire flow: data classification, policy extraction, encryption, and decryption.
 
+## Requirements
+- **Python 3.7 is required**.
+- You must run the entire project inside a **virtual environment** (`venv`) to avoid package conflicts.
+- The project uses **Charm-Crypto 0.5**, which is only compatible with Python 3.7.
+- Other dependencies are listed in `requirements.txt`.
+
 ## Setup and Installation
 
 To set up your project environment, create and activate a **virtual environment**:
 
 ### On Linux/macOS:
 ```bash
-python3 -m venv venv
+python3.7 -m venv venv
 source venv/bin/activate
 ```
 
