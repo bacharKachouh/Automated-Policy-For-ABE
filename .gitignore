@@ -161,6 +161,7 @@ cython_debug/
 .claude
 .idea
 CLAUDE.md
+ROADMAP.md
 
 # Trained model artifacts (large binary files — download/train separately)
 models/security_classifier/
