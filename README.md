@@ -1,86 +1,118 @@
-# Automated Policy For ABE
+# Automated Policy for ABE
 
-This repository implements a **Data-Centric Security Model** for ensuring the privacy and security of healthcare data. The system includes the following key features:
+A **Data-Centric Security Model** for healthcare data privacy.  The system automatically classifies patient records, generates access control policies, and encrypts data using Attribute-Based Encryption (ABE).
 
-- **Data Classification**: Classifies clinical data sections based on their sensitivity using BioClinicalBERT.
-- **Automated Policy Extraction**: Uses a fine-tuned GPT-2 model to generate data access policies based on extracted features.
-- **Hybrid Lewko-Waters Attribute-Based Encryption (ABE)**: Encrypts data based on policy enforcement using ABE.
+## Pipeline Overview
 
-## Project Overview
+```
+Patient XML  →  Security Classification  →  Attribute Extraction  →  Policy Generation  →  ABE Encryption
+              (BioClinicalBERT)            (XML metadata)           (GPT-2 fine-tuned)    (Lewko-Waters)
+```
 
-The project includes:
-
-1. **Security Classification Model** (`securityclassification_final`): Classifies clinical data into security categories.
-2. **Policy Extraction Model** (`Policy_extraction`): Generates access control policies based on clinical data and extracted features.
-3. **Demo Script**: Allows users to choose a hospital, enter a client ID, and runs the entire flow: data classification, policy extraction, encryption, and decryption.
+1. **Security Classification** — BioClinicalBERT classifies each section of a patient XML record into one of four sensitivity levels: *Highly Confidential*, *Confidential*, *Restricted*, *Public*.
+2. **Attribute Extraction** — Metadata fields (data type, department, purpose, emergency flag) are extracted from the classified record.
+3. **Policy Generation** — A fine-tuned GPT-2 model generates a natural-language access policy from the extracted attributes.
+4. **Hybrid ABE Encryption** — The policy is converted into a Charm-Crypto policy string and the record is encrypted using the Lewko-Waters decentralised ABE scheme (ABE key encapsulation + AES).
 
 ## Requirements
-- **Python 3.7 is required**.
-- You must run the entire project inside a **virtual environment** (`venv`) to avoid package conflicts.
-- The project uses **Charm-Crypto 0.5**, which is only compatible with Python 3.7.
-- Other dependencies are listed in `requirements.txt`.
-## Hardware Requirements
 
-- A machine with sufficient computational resources is required for training:
-  - **RAM**: 16 GB or more  
-  - **CPU**: Minimum 4 cores (8 cores recommended for faster processing)  
-  - **GPU**: A dedicated GPU is required for efficient training of both models 
+- **Python 3.7** is required — Charm-Crypto 0.50 only supports Python 3.7.
+- A virtual environment is mandatory to avoid package conflicts.
+- A GPU is strongly recommended for model training.
 
-## Setup and Installation
+## Setup
 
-To set up your project environment, create and activate a **virtual environment**:
-
-### On Linux/macOS:
 ```bash
 python3.7 -m venv venv
-source venv/bin/activate
+source venv/bin/activate      # Linux/macOS
+# venv\Scripts\activate       # Windows
+
+pip install -r requirement.txt
 ```
 
-Once activated, install the required dependencies:
+## First-Time Setup
+
+### 1 — Train the models
+
 ```bash
-pip install -r requirements.txt
+# Optional: regenerate the synthetic training data
+python training/generate_data.py
+
+# Fine-tune BioClinicalBERT (security classifier)
+python scripts/train_classifier.py
+
+# Fine-tune GPT-2 (policy extractor)
+python scripts/train_policy_extractor.py
 ```
-#### Training the Models
-1. **Security Classification Model**
-To train the security classification model:
+
+Trained models are saved to `models/security_classifier/` and `models/policy_extractor/`.
+
+### 2 — Generate authority keys
+
 ```bash
-cd models/securityclassification_final
-python training.py
+python scripts/generate_authority_keys.py
 ```
-2. **Policy Extraction Model**
-To train the policy extraction model:
+
+### 3 — Register a patient
+
 ```bash
-cd models/Policy_extraction
-python trainingf.py
+python scripts/register_patient.py
 ```
-##### Running the Demo
-The demo script allows you to choose a hospital, input a client ID, and the system will run the following:
 
-Classify the data based on sensitivity.
+Place the patient XML file inside the created `Plaindata/` folder.
 
-Extract the policy based on classification.
+## Running the Pipeline
 
-Encrypt the data using the generated policy.
-
-Decrypt the data based on the client's attributes.
-
-To run the demo:
 ```bash
-python demo.py
+python scripts/run_pipeline.py
 ```
-You will be prompted to:
 
-Select a hospital (e.g., Hospital1 or Hospital2).
+You will be prompted for the hospital, patient ID, XML filename, requesting user GID, and user attributes.
 
-Enter the patient ID (make sure the patient ID exists in the relevant hospital's patients folder).
+> **Before each run**, make sure `Classifieddata/`, `DataAttribute/`, and `Accesspolicy/` are empty for the target patient — only `Plaindata/` should contain the input XML.
 
-The system will then execute the full pipeline. Note: The patient ID will be validated against the patients folder of the chosen hospital to ensure it exists before proceeding with classification, policy extraction, encryption, and decryption.
+## Project Structure
 
-Demo Instructions
-The demo will ask for the patient file name, which should be in the format: Patient_{patient_id}.xml.
+```
+src/                    ← core Python package
+  config.py             ← all paths and settings (override via env vars)
+  abe/                  ← Lewko-Waters DABE + hybrid encryption + policy parser
+  classification/       ← BioClinicalBERT security classifier
+  policy/               ← GPT-2 policy extractor
+  hospital/             ← patient management + pipeline orchestration
+  utils/                ← XML parsing utilities
 
-For testing, you can try using a file like Patient_PT22222_1.xml or any other valid patient ID. However, make sure to delete the content of each folder in the patients folder except the plaindata folder before running the demo.
+scripts/                ← executable entry points
+  run_pipeline.py
+  register_patient.py
+  generate_authority_keys.py
+  train_classifier.py
+  train_policy_extractor.py
 
-Contact
-Developed by Bachar KACHOUH. For inquiries or collaborations, reach out at bachar.kachouh@hotmail.com.
+training/
+  data/                 ← CSV training datasets
+  generate_data.py      ← synthetic data generator
 
+data/
+  Hospital1/
+    keys/               ← authority secret key
+    patients/           ← patient records (Plaindata, Classifieddata, …)
+  Hospital2/
+
+keys/                   ← shared public keys and global parameters
+models/                 ← trained model artifacts (gitignored, built by training scripts)
+```
+
+## Configuration
+
+Copy `.env.example` to `.env` and set any paths that differ from the defaults:
+
+```bash
+cp .env.example .env
+```
+
+All configuration lives in `src/config.py` and can be overridden via environment variables — no hardcoded paths anywhere in the codebase.
+
+## Contact
+
+Developed by Bachar KACHOUH — [bachar.kachouh@hotmail.com](mailto:bachar.kachouh@hotmail.com)
