@@ -55,8 +55,6 @@ def _build_abe_system():
     Construct the Hybrid ABE wrapper, load persisted global params and
     public keys from the DB. Returns (hyb, group, gp, all_pk).
     """
-    from src.db import repo
-
     group = PairingGroup(config.PAIRING_GROUP)
     hyb = HybridABEncMA(Dabe(group), group)
     gp = repo.load_global_params(group)
