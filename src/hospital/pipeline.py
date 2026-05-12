@@ -11,6 +11,7 @@ from src.abe.dabe import Dabe
 from src.abe.hybrid import HybridABEncMA
 from src.abe.policy_parser import parse_policy_to_abe_format
 from src.classification.classifier import SecurityClassifier
+from src.db import repo
 from src.hospital.patient import get_patient_dir
 from src.policy.extractor import PolicyExtractor
 from src.utils.xml_utils import (
@@ -21,37 +22,45 @@ from src.utils.xml_utils import (
 )
 
 
+def _build_prefix_map():
+    """Map attribute prefix -> authority name. Derived once from config."""
+    m = {}
+    for name, cfg in config.HOSPITAL_CONFIGS.items():
+        m[cfg["prefix"]] = name
+    for name, cfg in config.INSURANCE_CONFIGS.items():
+        m[cfg["prefix"]] = name
+    return m
+
+
+_PREFIX_MAP = _build_prefix_map()
+
+
+def resolve_authority(attribute):
+    """
+    Map a fully-qualified attribute (e.g. "hospitalA.doctor") to the name of
+    the authority that owns it. Raises ValueError on a malformed attribute
+    and KeyError on an unknown prefix.
+    """
+    if "." not in attribute:
+        raise ValueError(f"Malformed attribute (no prefix): {attribute!r}")
+    prefix = attribute.split(".", 1)[0]
+    if prefix not in _PREFIX_MAP:
+        raise KeyError(f"Unknown attribute prefix: {prefix!r}")
+    return _PREFIX_MAP[prefix]
+
+
 def _build_abe_system():
     """
-    Instantiate the Hybrid ABE system and generate authority key pairs.
-
-    NOTE: Keys are generated fresh on every call.  This is acceptable for a
-    demo but a production system should generate keys once, persist them with
-    Charm-Crypto's native serialisation, and load them here.
-
-    Returns
-    -------
-    tuple
-        ``(hyb, gp, authority_keys, all_pk)``
+    Construct the Hybrid ABE wrapper, load persisted global params and
+    public keys from the DB. Returns (hyb, group, gp, all_pk).
     """
+    from src.db import repo
+
     group = PairingGroup(config.PAIRING_GROUP)
     hyb = HybridABEncMA(Dabe(group), group)
-    gp = hyb.setup()
-
-    all_pk = {}
-    authority_keys = {}
-
-    for name, cfg in config.HOSPITAL_CONFIGS.items():
-        sk, pk = hyb.authsetup(gp, cfg["attributes"])
-        authority_keys[name] = sk
-        all_pk.update(pk)
-
-    for name, cfg in config.INSURANCE_CONFIGS.items():
-        sk, pk = hyb.authsetup(gp, cfg["attributes"])
-        authority_keys[name] = sk
-        all_pk.update(pk)
-
-    return hyb, gp, authority_keys, all_pk
+    gp = repo.load_global_params(group)
+    all_pk = repo.load_all_pks(group)
+    return hyb, group, gp, all_pk
 
 
 def run_pipeline(hospital_name, patient_id, xml_filename, user_gid, user_attributes):
@@ -135,13 +144,14 @@ def run_pipeline(hospital_name, patient_id, xml_filename, user_gid, user_attribu
     # Stage 4 — ABE Encryption + Decryption
     # -----------------------------------------------------------------------
     print("\n[4/4] Running ABE encryption...")
-    hyb, gp, authority_keys, all_pk = _build_abe_system()
+    hyb, group, gp, all_pk = _build_abe_system()
 
-    # Issue keys for the requesting user
-    hospital_sk = authority_keys[hospital_name]
+    # Issue keys per owning authority (the multi-authority fix)
     user_keys = {}
     for attr in user_attributes:
-        hyb.keygen(gp, hospital_sk, attr, user_gid, user_keys)
+        authority_name = resolve_authority(attr)
+        authority_sk = repo.load_authority_sk(group, authority_name)
+        hyb.keygen(gp, authority_sk, attr, user_gid, user_keys)
 
     # Encrypt the plain XML bytes
     xml_bytes = plain_xml.read_bytes()
@@ -153,7 +163,7 @@ def run_pipeline(hospital_name, patient_id, xml_filename, user_gid, user_attribu
     print(f"  ABE policy : {policy_str}")
     ct = hyb.encrypt(gp, all_pk, xml_bytes, policy_str)
 
-    # Verify round-trip
+    # Verify round-trip (Group 3 will replace this with audit logging)
     try:
         decrypted = hyb.decrypt(gp, user_keys, ct)
         assert decrypted == xml_bytes, "Decrypted content does not match original!"
