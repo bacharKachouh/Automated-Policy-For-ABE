@@ -52,6 +52,4 @@ class HybridABEncMA(ABEncMultiAuth):
 
     def decrypt(self, gp, sk, ct):
         key = self._scheme.decrypt(gp, sk, ct["c1"])
-        if key is False:
-            raise Exception("ABE decryption failed — attributes do not satisfy policy.")
         return AuthenticatedCryptoAbstraction(sha2(key)).decrypt(ct["c2"])

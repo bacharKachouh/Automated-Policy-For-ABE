@@ -63,21 +63,11 @@ class SecurityClassifier:
         """
         Aggregate per-section labels into a single document-level label.
 
-        Labels are checked in priority order (highest sensitivity first).
-        The first label whose section fraction meets or exceeds its threshold wins.
-
-        Parameters
-        ----------
-        section_labels : dict
-            ``{section_tag: label}`` from :meth:`classify_sections`.
-        thresholds : dict, optional
-            Override ``config.CLASSIFICATION_THRESHOLDS``.
-
-        Returns
-        -------
-        str
-            Document-level security label.
+        If *section_labels* is empty (e.g. the XML had no <Content> element),
+        returns "Public" rather than dividing by zero.
         """
+        if not section_labels:
+            return "Public"
         thresholds = thresholds or CLASSIFICATION_THRESHOLDS
         counts = Counter(section_labels.values())
         total = len(section_labels)
