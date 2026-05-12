@@ -176,3 +176,13 @@ training/data/cached_lm_*
 data/abe.db
 data/abe.db-journal
 data/abe.db-wal
+
+# Dataset v2 build artifacts (regenerated via scripts/dataset_v2)
+training/data/medical_data_v2.csv
+training/data/medical_data_v2.csv.bak
+training/data/raw/augmented_notes_30K.jsonl
+training/data/raw/asclepius_clinical_notes.parquet
+training/data/raw/data/
+training/data/raw/medical_abstracts_train.parquet
+training/data/raw/.huggingface*
+training/data/v2_seed_20.json
