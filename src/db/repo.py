@@ -109,3 +109,36 @@ def list_authorities():
             "SELECT name, type, prefix FROM authorities ORDER BY name"
         ).fetchall()
     return [dict(r) for r in rows]
+
+
+# ---------------------------------------------------------------------------
+# Patients
+# ---------------------------------------------------------------------------
+
+def register_patient(hospital_name, patient_id, gid):
+    with get_conn() as conn:
+        conn.execute(
+            "INSERT OR REPLACE INTO patients (hospital_name, patient_id, gid) "
+            "VALUES (?, ?, ?)",
+            (hospital_name, patient_id, gid),
+        )
+        conn.commit()
+
+
+def get_patient(hospital_name, patient_id):
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT patient_id, hospital_name, gid FROM patients "
+            "WHERE hospital_name = ? AND patient_id = ?",
+            (hospital_name, patient_id),
+        ).fetchone()
+    return dict(row) if row else None
+
+
+def list_patients(hospital_name):
+    with get_conn() as conn:
+        rows = conn.execute(
+            "SELECT patient_id FROM patients WHERE hospital_name = ? ORDER BY patient_id",
+            (hospital_name,),
+        ).fetchall()
+    return [r["patient_id"] for r in rows]

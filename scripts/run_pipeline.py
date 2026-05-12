@@ -30,8 +30,7 @@ def _prompt_hospital():
 
 
 def _prompt_patient(hospital_name):
-    patients_dir = config.HOSPITAL_CONFIGS[hospital_name]["patients_dir"]
-    available = list_patients(patients_dir)
+    available = list_patients(hospital_name)
     if available:
         print("Registered patients: " + ", ".join(available))
     patient_id = input("Enter Patient ID (e.g. PT12345): ").strip()

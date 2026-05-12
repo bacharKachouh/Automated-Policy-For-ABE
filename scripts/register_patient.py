@@ -32,10 +32,10 @@ def main():
 
     hospital_cfg = config.HOSPITAL_CONFIGS[hospital_name]
     register_patient(
+        hospital_name=hospital_name,
         patients_dir=hospital_cfg["patients_dir"],
         gid=gid,
         patient_id=patient_id,
-        mapping_file=hospital_cfg["mapping_file"],
     )
 
 
