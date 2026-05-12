@@ -16,6 +16,7 @@ DATA_DIR = Path(os.environ.get("DATA_DIR", str(BASE_DIR / "data")))
 KEYS_DIR = Path(os.environ.get("KEYS_DIR", str(BASE_DIR / "keys")))
 MODELS_DIR = Path(os.environ.get("MODELS_DIR", str(BASE_DIR / "models")))
 TRAINING_DATA_DIR = BASE_DIR / "training" / "data"
+DB_PATH = Path(os.environ.get("DB_PATH", str(DATA_DIR / "abe.db")))
 
 # ---------------------------------------------------------------------------
 # Trained model locations

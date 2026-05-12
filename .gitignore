@@ -171,3 +171,8 @@ models/policy_extractor/
 *.lock
 training/data/processed_dataset.txt
 training/data/cached_lm_*
+
+# SQLite state
+data/abe.db
+data/abe.db-journal
+data/abe.db-wal
