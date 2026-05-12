@@ -191,11 +191,13 @@ These belong in a future plan in `docs/superpowers/plans/`, not here. Listed so 
 
 These need an explicit decision before we start implementing.
 
-1. **4-tier scheme — keep / merge / rename?** Currently HC / C / R / P. Decide based on the standards mapping in §2.
-2. **Dataset strategy — synthetic-rebuild only, or also pull real data (MIMIC)?** Real data adds ~1-2 weeks of PhysioNet credentialing but is the strongest defense.
-3. **LLM baseline — include or skip?** Including it raises the bar; skipping risks "but did you try zero-shot GPT?" in review.
-4. **Document granularity — keep section-level + aggregator, or move to whole-document?** Hierarchical-attention models are an option.
-5. **Labelling guidelines — does the user have time / desire to write these?** Without them, the synthetic generator can't be trusted to produce consistent labels.
-6. **Compute budget — are we OK with 4 models × 3 seeds × ablations?** Estimate: a few hours of GPU time on the trooper server, well within reach.
+1. ~~4-tier scheme — keep / merge / rename?~~ **DECIDED (2026-05-12):** keep HC / C / R / P; add the HIPAA/GDPR mapping in §2 to the paper. Dataset cleanup must enforce the mapping.
+2. ~~Dataset strategy — synthetic-rebuild only, or also pull real data (MIMIC)?~~ **DECIDED (2026-05-12):** scaled corpus (target 50K-100K rows) sourced from public medical text + labeled by Claude through Claude Code sessions (leveraging Max subscription, no per-token API cost). Source candidates: AGBonnet/augmented-clinical-notes (MIT, 30K PMC notes), TimSchopf/medical_abstracts (CC-BY, 14K), PubMed Central case reports (E-utilities). Labels assigned by Claude Opus 4.7 in this Claude Code workflow using HIPAA/GDPR-anchored prompts from §2 (the prompt is the labelling guidelines from Q5). Pipeline: pull source → chunk into ~1.5-3K row batches → label each batch in a Claude Code session → append to CSV → iterate ~20-30 sessions. Quality controls: exact + near-dup dedup (MinHash), length filter (50-300 words), 5-10% re-label sample for inter-method agreement, hand-spot-check ~100 rows. No external data wait (PhysioNet / MIMIC deferred). HC-tier validation against PHI-detection corpora is optional follow-up.
+3. ~~LLM baseline — include or skip?~~ **DECIDED (2026-05-12):** include both zero-shot AND few-shot LLM (Qwen-2.5-7B-Instruct or comparable open-weight 7B) as baselines in the main results table. Evaluated on the same test set as the fine-tuned models.
+4. ~~Document granularity~~ **DECIDED:** keep section-level + threshold aggregator. Add a threshold-sensitivity analysis + alternative-aggregator ablation (max-severity, majority vote) in evaluation. Hierarchical (HAN) deferred as future work.
+5. ~~Labelling guidelines~~ **DECIDED:** v1 written at `training/labelling_guidelines.md`. Doubles as the labelling prompt for Claude. Tightened reproductive/oncology/pediatric triggers based on user spot-check (2026-05-12).
+6. ~~Compute budget~~ **DECIDED:** 2× V100 32GB on the trooper server + Claude Max for Claude-Code-driven labelling. Not a constraint.
+
+**Dataset target locked (2026-05-12):** 100K rows, ~25K per tier (HC/C/R/P), balanced. Sources: AGBonnet (PMC notes, HC + C), TimSchopf/medical_abstracts + PubMed E-utilities (R), public-health bulletins + generated content (P). Labelling done in Claude Code sessions via Max sub (no per-token API cost).
 
 Answer these and the next step is a writing-plans pass to turn §8 into a real implementation plan.
