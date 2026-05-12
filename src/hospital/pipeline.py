@@ -146,6 +146,23 @@ def run_pipeline(hospital_name, patient_id, xml_filename, user_gid, user_attribu
     print("\n[4/4] Running ABE encryption...")
     hyb, group, gp, all_pk = _build_abe_system()
 
+    # Derive the ABE policy string before anything that needs it
+    policy_str = parse_policy_to_abe_format(policy_text, prefix)
+    if not policy_str:
+        print("  WARNING: Could not derive an ABE policy string from the generated text.")
+        return False
+
+    # Persist the pipeline run as a patient_records row
+    record_id = repo.save_patient_record(
+        hospital_name=hospital_name,
+        patient_id=patient_id,
+        xml_filename=xml_filename,
+        document_label=document_label,
+        section_labels=section_labels,
+        policy_text=policy_text,
+        abe_policy_string=policy_str,
+    )
+
     # Issue keys per owning authority (the multi-authority fix)
     user_keys = {}
     for attr in user_attributes:
@@ -155,15 +172,11 @@ def run_pipeline(hospital_name, patient_id, xml_filename, user_gid, user_attribu
 
     # Encrypt the plain XML bytes
     xml_bytes = plain_xml.read_bytes()
-    policy_str = parse_policy_to_abe_format(policy_text, prefix)
-    if not policy_str:
-        print("  WARNING: Could not derive an ABE policy string from the generated text.")
-        return False
-
     print(f"  ABE policy : {policy_str}")
     ct = hyb.encrypt(gp, all_pk, xml_bytes, policy_str)
+    repo.save_ciphertext(group, record_id, ct)
 
-    # Verify round-trip (Group 3 will replace this with audit logging)
+    # Verify round-trip (Task 8 will replace this with audit logging)
     try:
         decrypted = hyb.decrypt(gp, user_keys, ct)
         assert decrypted == xml_bytes, "Decrypted content does not match original!"

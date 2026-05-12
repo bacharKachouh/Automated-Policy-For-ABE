@@ -142,3 +142,63 @@ def list_patients(hospital_name):
             (hospital_name,),
         ).fetchall()
     return [r["patient_id"] for r in rows]
+
+
+# ---------------------------------------------------------------------------
+# Patient records (per pipeline run)
+# ---------------------------------------------------------------------------
+
+def save_patient_record(
+    hospital_name,
+    patient_id,
+    xml_filename,
+    document_label,
+    section_labels,
+    policy_text,
+    abe_policy_string,
+):
+    with get_conn() as conn:
+        cur = conn.execute(
+            "INSERT INTO patient_records "
+            "(hospital_name, patient_id, xml_filename, document_label, "
+            " section_labels_json, policy_text, abe_policy_string) "
+            "VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (
+                hospital_name,
+                patient_id,
+                xml_filename,
+                document_label,
+                json.dumps(section_labels),
+                policy_text,
+                abe_policy_string,
+            ),
+        )
+        conn.commit()
+        return cur.lastrowid
+
+
+# ---------------------------------------------------------------------------
+# Ciphertexts
+# ---------------------------------------------------------------------------
+
+def save_ciphertext(group, record_id, ciphertext):
+    """Serialise *ciphertext* (dict from HybridABEncMA.encrypt) and store it."""
+    blob = serialize_obj(group, ciphertext)
+    with get_conn() as conn:
+        cur = conn.execute(
+            "INSERT INTO ciphertexts (record_id, ciphertext_bytes) VALUES (?, ?)",
+            (record_id, blob),
+        )
+        conn.commit()
+        return cur.lastrowid
+
+
+def load_ciphertext(group, ciphertext_id):
+    with get_conn() as conn:
+        row = conn.execute(
+            "SELECT ciphertext_bytes FROM ciphertexts WHERE id = ?",
+            (ciphertext_id,),
+        ).fetchone()
+    if row is None:
+        raise KeyError(f"Ciphertext not found: {ciphertext_id}")
+    return deserialize_obj(group, row["ciphertext_bytes"])
