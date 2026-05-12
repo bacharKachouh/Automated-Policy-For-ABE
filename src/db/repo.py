@@ -202,3 +202,32 @@ def load_ciphertext(group, ciphertext_id):
     if row is None:
         raise KeyError(f"Ciphertext not found: {ciphertext_id}")
     return deserialize_obj(group, row["ciphertext_bytes"])
+
+
+# ---------------------------------------------------------------------------
+# Audit runs
+# ---------------------------------------------------------------------------
+
+def save_audit_run(
+    record_id,
+    user_gid,
+    user_attributes,
+    outcome,
+    duration_ms,
+    error_message=None,
+):
+    with get_conn() as conn:
+        conn.execute(
+            "INSERT INTO audit_runs "
+            "(record_id, user_gid, user_attributes_json, outcome, duration_ms, error_message) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                record_id,
+                user_gid,
+                json.dumps(user_attributes),
+                outcome,
+                duration_ms,
+                error_message,
+            ),
+        )
+        conn.commit()

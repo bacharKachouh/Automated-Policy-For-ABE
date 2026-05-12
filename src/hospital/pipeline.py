@@ -2,6 +2,7 @@
 End-to-end pipeline: classification → attribute extraction →
 policy generation → ABE encryption / decryption.
 """
+import time
 from pathlib import Path
 
 from charm.toolbox.pairinggroup import PairingGroup
@@ -176,12 +177,31 @@ def run_pipeline(hospital_name, patient_id, xml_filename, user_gid, user_attribu
     ct = hyb.encrypt(gp, all_pk, xml_bytes, policy_str)
     repo.save_ciphertext(group, record_id, ct)
 
-    # Verify round-trip (Task 8 will replace this with audit logging)
+    t0 = time.time()
     try:
         decrypted = hyb.decrypt(gp, user_keys, ct)
-        assert decrypted == xml_bytes, "Decrypted content does not match original!"
-        print("  Decryption successful. Round-trip verified.")
+        duration_ms = int((time.time() - t0) * 1000)
+        if decrypted != xml_bytes:
+            repo.save_audit_run(
+                record_id, user_gid, user_attributes,
+                outcome="error", duration_ms=duration_ms,
+                error_message="Round-trip mismatch",
+            )
+            print("  Decryption mismatch.")
+            return False
+        repo.save_audit_run(
+            record_id, user_gid, user_attributes,
+            outcome="success", duration_ms=duration_ms,
+        )
+        print(f"  Decryption successful ({duration_ms} ms).")
         return True
     except Exception as exc:
-        print(f"  Decryption failed: {exc}")
+        duration_ms = int((time.time() - t0) * 1000)
+        outcome = "policy_not_satisfied" if "satisfy" in str(exc).lower() else "error"
+        repo.save_audit_run(
+            record_id, user_gid, user_attributes,
+            outcome=outcome, duration_ms=duration_ms,
+            error_message=str(exc),
+        )
+        print(f"  Decryption failed ({outcome}): {exc}")
         return False
