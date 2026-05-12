@@ -64,7 +64,15 @@ def _build_abe_system():
     return hyb, group, gp, all_pk
 
 
-def run_pipeline(hospital_name, patient_id, xml_filename, user_gid, user_attributes):
+def run_pipeline(
+    hospital_name,
+    patient_id,
+    xml_filename,
+    user_gid,
+    user_attributes,
+    classifier=None,
+    extractor=None,
+):
     """
     Execute the full four-stage pipeline for a single patient record.
 
@@ -104,7 +112,8 @@ def run_pipeline(hospital_name, patient_id, xml_filename, user_gid, user_attribu
     print("\n[1/4] Classifying patient data...")
     plain_xml = patient_dir / "Plaindata" / xml_filename
 
-    classifier = SecurityClassifier()
+    if classifier is None:
+        classifier = SecurityClassifier()
     sections = parse_content_sections(plain_xml)
     section_labels = classifier.classify_sections(sections)
     document_label = classifier.classify_document(section_labels)
@@ -132,7 +141,8 @@ def run_pipeline(hospital_name, patient_id, xml_filename, user_gid, user_attribu
     # Stage 3 — Access Policy Generation
     # -----------------------------------------------------------------------
     print("\n[3/4] Generating access policy...")
-    extractor = PolicyExtractor()
+    if extractor is None:
+        extractor = PolicyExtractor()
     policy_text = extractor.extract(prompt)
     print(f"  Policy text : {policy_text}")
 
