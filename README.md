@@ -20,7 +20,7 @@ Patient XML  →  Security Classification  →  Attribute Extraction  →  Polic
 - A virtual environment is mandatory to avoid package conflicts.
 - A GPU is strongly recommended for model training.
 
-## Setup
+## Setup (one-time, per fresh checkout)
 
 ```bash
 python3.7 -m venv venv
@@ -28,11 +28,12 @@ source venv/bin/activate      # Linux/macOS
 # venv\Scripts\activate       # Windows
 
 pip install -r requirement.txt
+
+python scripts/init_db.py                  # create data/abe.db
+python scripts/generate_authority_keys.py  # populate authorities + global params
 ```
 
-## First-Time Setup
-
-### 1 — Train the models
+## Training the Models (optional, only needed for the real pipeline)
 
 ```bash
 # Optional: regenerate the synthetic training data
@@ -45,29 +46,19 @@ python scripts/train_classifier.py
 python scripts/train_policy_extractor.py
 ```
 
-Trained models are saved to `models/security_classifier/` and `models/policy_extractor/`.
+Trained models are saved to `models/security_classifier/` and `models/policy_extractor/`. The smoke test does not need them — it uses deterministic stubs.
 
-### 2 — Generate authority keys
-
-```bash
-python scripts/generate_authority_keys.py
-```
-
-### 3 — Register a patient
+## Running the pipeline
 
 ```bash
-python scripts/register_patient.py
+python scripts/register_patient.py    # register a new patient (DB + filesystem)
+python scripts/run_pipeline.py        # full pipeline: classify → policy → encrypt/decrypt
+python scripts/smoke_test.py          # end-to-end check, uses ML stubs (no trained models needed)
 ```
 
-Place the patient XML file inside the created `Plaindata/` folder.
+`run_pipeline.py` prompts for the hospital, patient ID, XML filename, requesting user GID, and user attributes.
 
-## Running the Pipeline
-
-```bash
-python scripts/run_pipeline.py
-```
-
-You will be prompted for the hospital, patient ID, XML filename, requesting user GID, and user attributes.
+State now lives in `data/abe.db` (SQLite). The previous JSON key files and CSV patient mappings have been retired.
 
 > **Before each run**, make sure `Classifieddata/`, `DataAttribute/`, and `Accesspolicy/` are empty for the target patient — only `Plaindata/` should contain the input XML.
 
@@ -94,12 +85,11 @@ training/
   generate_data.py      ← synthetic data generator
 
 data/
+  abe.db                ← SQLite store: authorities, patients, records, ciphertexts, audit log
   Hospital1/
-    keys/               ← authority secret key
     patients/           ← patient records (Plaindata, Classifieddata, …)
   Hospital2/
 
-keys/                   ← shared public keys and global parameters
 models/                 ← trained model artifacts (gitignored, built by training scripts)
 ```
 
