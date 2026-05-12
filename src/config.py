@@ -63,6 +63,7 @@ HOSPITAL_CONFIGS = {
 
 INSURANCE_CONFIGS = {
     "InsCoA": {
+        "prefix": "insCoA",
         "attributes": [
             "insCoA.underwriter", "insCoA.claims_adjuster", "insCoA.customer_service",
             "insCoA.policy_admin", "insCoA.claims_processing",
@@ -71,6 +72,7 @@ INSURANCE_CONFIGS = {
         ],
     },
     "InsCoB": {
+        "prefix": "insCoB",
         "attributes": [
             "insCoB.underwriter", "insCoB.claims_adjuster", "insCoB.customer_service",
             "insCoB.policy_admin", "insCoB.claims_processing",

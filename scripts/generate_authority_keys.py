@@ -1,17 +1,8 @@
 #!/usr/bin/env python3
 """
-One-time authority key generation for all hospitals and insurance companies.
-
-Outputs
--------
-- ``keys/public_keys_and_GP.json``       — global parameters + all public keys (audit)
-- ``data/Hospital1/keys/hospital_A_SK.json``  — Hospital A secret key (audit)
-- ``data/Hospital2/keys/hospital_B_SK.json``  — Hospital B secret key (audit)
-- ``keys/InsCoA_SK.json``, ``keys/InsCoB_SK.json``  — insurance company secret keys
-
-NOTE: The JSON files store string representations of Charm-Crypto group elements
-and are for auditing / inspection only.  The live pipeline regenerates keys in
-memory.  See ``src/abe/authority.py`` for the serialisation caveat.
+Generate the global pairing parameters and per-authority key pairs and
+persist them to the SQLite database. Idempotent: re-running replaces
+existing rows.
 """
 import sys
 from pathlib import Path
@@ -21,29 +12,31 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 from charm.toolbox.pairinggroup import PairingGroup
 
 from src import config
-from src.abe.authority import AuthorityGeneration, save_public_keys_and_gp, save_secret_key
+from src.abe.dabe import Dabe
+from src.db import repo
+from src.db.connection import init_db
 
 
 def main():
-    print("Generating ABE authority keys...")
-    group = PairingGroup(config.PAIRING_GROUP)
-    auth = AuthorityGeneration(group)
-    gp = auth.setup()
+    init_db()  # idempotent
 
-    all_pk = {}
+    print(f"Initialising pairing group ({config.PAIRING_GROUP})...")
+    group = PairingGroup(config.PAIRING_GROUP)
+    dabe = Dabe(group)
+    gp = dabe.setup()
+
+    repo.save_global_params(group, gp, config.PAIRING_GROUP)
+    print("Global params saved.")
 
     for name, cfg in config.HOSPITAL_CONFIGS.items():
-        sk, pk = auth.authsetup(gp, cfg["attributes"])
-        save_secret_key(sk, cfg["sk_file"])
-        all_pk[name] = pk
+        sk, pk = dabe.authsetup(gp, cfg["attributes"])
+        repo.save_authority(group, name, "hospital", cfg["prefix"], sk, pk)
+        print(f"  Authority saved: {name} ({len(cfg['attributes'])} attributes)")
 
     for name, cfg in config.INSURANCE_CONFIGS.items():
-        sk, pk = auth.authsetup(gp, cfg["attributes"])
-        save_secret_key(sk, config.KEYS_DIR / f"{name}_SK.json")
-        all_pk[name] = pk
-
-    save_public_keys_and_gp(all_pk, gp, config.PUBLIC_KEYS_FILE)
-    print("\nAuthority key generation complete.")
+        sk, pk = dabe.authsetup(gp, cfg["attributes"])
+        repo.save_authority(group, name, "insurance", cfg["prefix"], sk, pk)
+        print(f"  Authority saved: {name} ({len(cfg['attributes'])} attributes)")
 
 
 if __name__ == "__main__":
